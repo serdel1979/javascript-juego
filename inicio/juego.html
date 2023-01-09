@@ -1,0 +1,147 @@
+<script>
+
+var mundo = {
+    nivel : {
+        alturas : [4,4,5,7,1,1,2,3,4,3,4,4.1,4.3,4,4.2,1,1.5,1.7,1.8,1,9],
+        bloque: {
+            ancho : 300,
+            alto : 20
+        }
+    },
+    camara : {
+        alto : 500,
+        ancho: 700,
+        x: 0
+    },
+    jugador: {
+        alto: 40,
+        ancho: 20,
+        x: 0,
+        y: 0,
+        caida: 0,
+        salto: 50,
+        velocidad : 15
+    },
+
+    constantes: {
+        gravedad: .8
+    }
+};
+
+//programa principal
+
+let terminado = false;
+var canvas, ctx;
+
+
+setInterval(bucle_pricipal,30);
+
+(function(){
+    var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                                window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+    window.requestAnimationFrame = requestAnimationFrame;
+    requestAnimationFrame(inicializacion);
+})();
+
+function inicializacion(){
+    canvas = document.getElementById("pantalla");
+    ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    mundo.camara.ancho = canvas.width;
+    mundo.camara.alto = canvas.height;
+
+    document.addEventListener("click", jugador_saltar);
+
+    bucle_pricipal();
+}
+
+function bucle_pricipal(){
+
+    avanza_jugador();
+    //borrar dibujo
+    avanza_camara();
+
+    borrar_lienzo(ctx);
+    dibuja_suelo(ctx);
+    dibuja_Jugador(ctx);
+
+}
+
+
+function avanza_camara(){
+    if(mundo.jugador.x > mundo.camara.x + mundo.camara.ancho / 2.2)
+        mundo.camara.x = mundo.camara.x + mundo.jugador.velocidad;
+    
+}
+
+function jugador_saltar(){
+    if(mundo.jugador.caida != 0)
+        return;
+    mundo.jugador.caida = mundo.jugador.salto;
+}
+
+
+function avanza_jugador(){
+    //avanza hacia adelante
+    mundo.jugador.x = mundo.jugador.x + mundo.jugador.velocidad;
+    let ancho_bloque = mundo.nivel.bloque.ancho;
+    let alto_bloque = mundo.nivel.bloque.alto;
+    let ancho_jug = mundo.jugador.ancho;
+    let alto_jug = mundo.jugador.alto;
+    let bloque_num = Math.floor(mundo.jugador.x / mundo.nivel.bloque.ancho);
+    let altura1 = mundo.nivel.alturas[bloque_num] * alto_bloque;
+    let altura2 = mundo.nivel.alturas[bloque_num + 1] * alto_bloque;
+    let ratio = (mundo.jugador.x % ancho_bloque)/ancho_bloque; 
+
+    let nueva_y = altura1 + ratio * (altura2-altura1) + alto_jug / 2;
+    let diferencia_y = nueva_y - mundo.jugador.y;
+
+    if(diferencia_y > -3){
+        mundo.jugador.y = nueva_y;
+        mundo.jugador.caida = 0;
+    }else{
+        mundo.jugador.caida -= mundo.constantes.gravedad;
+        mundo.jugador.y += Math.max(mundo.jugador.caida, diferencia_y);
+    }
+
+}
+
+function borrar_lienzo(ctx){
+
+    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+}
+
+function dibuja_suelo(ctx){
+    let { ancho, alto} = mundo.nivel.bloque;
+    let { alturas } = mundo.nivel;
+    ctx.fillStyle = "rgb(100,75,50)";
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    for(var i = 0; i < alturas.length; i++){
+        let altura = alturas[i];
+        let x = i * ancho;
+        let y = altura * alto;
+        ctx.lineTo(x,y);
+    }
+    ctx.lineTo(ctx.canvas.width,0);
+    ctx.closePath();
+    ctx.fill();
+}
+
+function dibuja_Jugador(ctx){
+    let { ancho, alto, x, y} = mundo.jugador;
+    ctx.fillStyle = "rgb(255,0,0)";
+    ctx.fillRect(x - ancho / 2,
+                    y - alto / 2,
+                    ancho,
+                    alto);
+}
+
+
+</script>
+
+<canvas style="transform: scaleY(-1);" id="pantalla"></canvas>
+
+<style>html,body{ margin: 0; padding: 0; }</style>
