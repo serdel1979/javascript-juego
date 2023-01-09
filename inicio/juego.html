@@ -2,7 +2,7 @@
 
 var mundo = {
     nivel : {
-        alturas : [4,4,5,7,1,1,2,3,4,3,4,4.1,4.3,4,4.2,1,1.5,1.7,1.8,1,9],
+        alturas : [1,2,3.5,9,0,2,2.5,3,4,10,12,15,16,3,7,2,0,4,5,3,6,2],
         bloque: {
             ancho : 300,
             alto : 20
@@ -19,7 +19,7 @@ var mundo = {
         x: 0,
         y: 0,
         caida: 0,
-        salto: 50,
+        salto: 100,
         velocidad : 15
     },
 
@@ -34,7 +34,7 @@ let terminado = false;
 var canvas, ctx;
 
 
-setInterval(bucle_pricipal,30);
+setInterval(bucle_pricipal,40);
 
 (function(){
     var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
@@ -67,6 +67,7 @@ function bucle_pricipal(){
     dibuja_suelo(ctx);
     dibuja_Jugador(ctx);
 
+    //requestAnimationFrame(bucle_pricipal);
 }
 
 
@@ -79,13 +80,14 @@ function avanza_camara(){
 function jugador_saltar(){
     if(mundo.jugador.caida != 0)
         return;
-    mundo.jugador.caida = mundo.jugador.salto;
+    mundo.jugador.y += mundo.jugador.salto;
+    console.log(mundo.jugador.y);
 }
 
 
 function avanza_jugador(){
     //avanza hacia adelante
-    mundo.jugador.x = mundo.jugador.x + mundo.jugador.velocidad;
+    mundo.jugador.x += mundo.jugador.velocidad;
     let ancho_bloque = mundo.nivel.bloque.ancho;
     let alto_bloque = mundo.nivel.bloque.alto;
     let ancho_jug = mundo.jugador.ancho;

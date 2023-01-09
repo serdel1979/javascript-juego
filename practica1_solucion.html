@@ -1,0 +1,96 @@
+<script>
+
+
+var mundo = {
+
+	jugador: {	
+		x: 0,
+		y: 100,
+		velocidad: 4	
+	},
+	
+	gravedad: -1
+}
+
+
+setInterval(bucle, 40);
+
+
+function bucle() 
+{
+	let canvas = document.getElementById("canvas");
+	let ctx = canvas.getContext("2d");
+	
+	avanza_jugador();
+	
+	borrar_lienzo(ctx);	
+	
+	dibujar_jugador(ctx);
+	
+	mostrar_valores();
+}
+
+
+function avanza_jugador()
+{
+	mundo.jugador.x += mundo.jugador.velocidad;
+	
+	// comprobamos si el jugador está saltando
+	if(mundo.jugador.estado == "saltando")
+	{
+		// calculamos la posición Y del jugador según su velocidad Y
+		mundo.jugador.y += mundo.jugador.velocidad_y;	
+		
+		// la velocidad Y irá decrementando con el tiempo hasta llegar a ser negativa
+		mundo.jugador.velocidad_y += mundo.gravedad;
+		
+		// detectamos la llegada al suelo
+		if(mundo.jugador.y < 100)
+		{
+			mundo.jugador.y = 100; // fijamos la altura al suelo
+			mundo.jugador.estado = "corriendo";
+		}
+	}	
+	
+}
+
+function salto()
+{
+	if(mundo.jugador.estado == "saltando")
+	{
+		// no hacemos nada, es decir, ya estamos saltando, no podemos volver a saltar
+		return;
+	}
+	
+	mundo.jugador.estado = "saltando";
+	mundo.jugador.velocidad_y = 20;
+}
+
+function borrar_lienzo(ctx)
+{
+	ctx.fillStyle = "white";
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+}
+
+function dibujar_jugador(ctx)
+{
+	ctx.fillStyle = "red";
+	ctx.fillRect(mundo.jugador.x, mundo.jugador.y, 50, 70);
+}
+
+function mostrar_valores()
+{
+	let p = document.getElementById("valores");
+	p.innerHTML = "X:  " + mundo.jugador.x + "<br>" + 
+				  "Y:  " + mundo.jugador.y + "<br>" + 
+				  "VY: " + mundo.jugador.velocidad_y + "<br>" + 
+				  "ESTADO: " + mundo.jugador.estado;
+}
+
+document.addEventListener("click", salto);
+
+
+</script>
+
+<p id="valores"></p>
+<canvas id="canvas" width="800" height="500" style="transform: scaleY(-1)"></canvas>
