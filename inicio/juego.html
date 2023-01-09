@@ -20,7 +20,9 @@ var mundo = {
         y: 0,
         caida: 0,
         salto: 100,
-        velocidad : 15
+        velocidad : 15,
+        velocidad_y : 0,
+        estado: ""
     },
 
     constantes: {
@@ -67,7 +69,7 @@ function bucle_pricipal(){
     dibuja_suelo(ctx);
     dibuja_Jugador(ctx);
 
-    //requestAnimationFrame(bucle_pricipal);
+   // requestAnimationFrame(bucle_pricipal);
 }
 
 
@@ -78,16 +80,28 @@ function avanza_camara(){
 }
 
 function jugador_saltar(){
-    if(mundo.jugador.caida != 0)
-        return;
-    mundo.jugador.y += mundo.jugador.salto;
-    console.log(mundo.jugador.y);
+    if(mundo.jugador.estado == "saltando")
+	{
+		return;
+	}
+	
+	mundo.jugador.estado = "saltando";
+	mundo.jugador.velocidad_y = 20;
 }
 
 
 function avanza_jugador(){
     //avanza hacia adelante
     mundo.jugador.x += mundo.jugador.velocidad;
+    if(mundo.jugador.estado == "saltando")
+	{
+		// calculamos la posición Y del jugador según su velocidad Y
+		mundo.jugador.y += mundo.jugador.velocidad_y;	
+		
+		// la velocidad Y irá decrementando con el tiempo hasta llegar a ser negativa
+		mundo.jugador.velocidad_y += mundo.gravedad;	
+
+	}	
     let ancho_bloque = mundo.nivel.bloque.ancho;
     let alto_bloque = mundo.nivel.bloque.alto;
     let ancho_jug = mundo.jugador.ancho;
